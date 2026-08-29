@@ -13,7 +13,7 @@ A fun, interactive space shooter game built with Python and Pygame. Defend your 
 - [Game Controls](#game-controls)
 - [Difficulty Levels](#difficulty-levels)
 - [Project Structure](#project-structure)
-- [API Documentation](#api-documentation)
+- [Code Documentation](#code-documentation)
   - [Settings Module](#settings-module)
   - [Ship Module](#ship-module)
   - [Bullet Module](#bullet-module)
@@ -126,372 +126,129 @@ Game/
 
 ---
 
-## 📚 API Documentation
+## 📚 Code Documentation
 
 ### Settings Module (`settings.py`)
 
-Configuration class that stores all game settings and parameters.
+Configuration class for all game settings.
 
-#### Class: `Settings`
+**Class: `Settings`**
 
-**Purpose**: Centralized configuration for the game including screen, ship, bullet, and alien settings.
+| Method | Purpose |
+|--------|---------|
+| `__init__()` | Initialize game settings (screen size, speeds, bullet/alien properties) |
+| `set_stage(stage_num)` | Change difficulty level and update alien speed (1=Easy, 2=Medium, 3=Hard) |
 
-##### Methods
-
-**`__init__(self)`**
-- **Description**: Initialize all game settings and load the background image
-- **Parameters**: None
-- **Returns**: None
-- **Attributes Set**:
-  - `screen_width` (int): Screen width in pixels (1200)
-  - `screen_height` (int): Screen height in pixels (800)
-  - `bg_color` (tuple): RGB background color (230, 230, 230)
-  - `bg` (pygame.Surface): Loaded and scaled background image
-  - `ship_speed_factor` (float): Ship movement speed (1.5 pixels/frame)
-  - `bullet_speed_factor` (float): Bullet movement speed (1 pixel/frame)
-  - `bullet_width` (int): Bullet width in pixels (3)
-  - `bullet_height` (int): Bullet height in pixels (15)
-  - `bullet_color` (tuple): Bullet RGB color (0, 0, 0) - black
-  - `bullet_allowed` (int): Maximum bullets on screen (3)
-  - `stage` (int): Current difficulty level (1-3)
-  - `stage_names` (dict): Mapping of stage numbers to names
-  - `stage_speeds` (dict): Mapping of stage numbers to alien speeds
-  - `alien_speed_factor` (float): Current alien movement speed
-  - `alien_points` (int): Points awarded per alien destroyed (50)
-
-**`set_stage(self, stage_num)`**
-- **Description**: Change the game difficulty level and update alien speed
-- **Parameters**:
-  - `stage_num` (int): Difficulty level (1, 2, or 3)
-- **Returns**: None
-- **Side Effects**: Updates `self.stage` and `self.alien_speed_factor`
+**Key Attributes:**
+- `screen_width`, `screen_height`: Display dimensions (1200×800)
+- `ship_speed_factor`: Player movement speed (1.5)
+- `bullet_speed_factor`: Projectile speed (1.0)
+- `alien_speed_factor`: Enemy speed based on current stage
+- `bullet_allowed`: Max bullets on screen (3)
 
 ---
 
 ### Ship Module (`ship.py`)
 
-Handles the player-controlled spaceship.
+Player-controlled spaceship with 4-directional movement.
 
-#### Class: `Ship`
+**Class: `Ship`**
 
-**Purpose**: Represents the player's ship with movement controls and rendering.
+| Method | Purpose |
+|--------|---------|
+| `__init__(ai_settings, screen)` | Load ship image, set initial position (bottom center) |
+| `update()` | Update position based on movement flags, keep within screen bounds |
+| `blitme()` | Draw ship sprite to screen |
 
-##### Methods
-
-**`__init__(self, ai_settings, screen)`**
-- **Description**: Initialize the ship, load its image, and set starting position
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings object
-  - `screen` (pygame.Surface): Game display surface
-- **Returns**: None
-- **Attributes Set**:
-  - `screen`: Reference to game display
-  - `ai_settings`: Reference to game settings
-  - `image` (pygame.Surface): Ship sprite image
-  - `rect` (pygame.Rect): Ship bounding rectangle
-  - `screen_rect` (pygame.Rect): Screen dimensions rectangle
-  - `center` (float): Horizontal position (centerx)
-  - `center_y` (float): Vertical position (centery)
-  - `moving_right`, `moving_left`, `moving_up`, `moving_down` (bool): Movement flags
-
-**`update(self)`**
-- **Description**: Update ship position based on movement flags and screen boundaries
-- **Parameters**: None
-- **Returns**: None
-- **Behavior**:
-  - Moves ship right if `moving_right` flag is True and not at screen edge
-  - Moves ship left if `moving_left` flag is True and not at screen edge
-  - Moves ship up if `moving_up` flag is True and not at screen edge
-  - Moves ship down if `moving_down` flag is True and not at screen edge
-  - Updates rect position from float center values
-
-**`blitme(self)`**
-- **Description**: Draw the ship sprite on the screen
-- **Parameters**: None
-- **Returns**: None
+**Movement Flags:**
+- `moving_left`, `moving_right`, `moving_up`, `moving_down` — Set by keyboard input
 
 ---
 
 ### Bullet Module (`bullet.py`)
 
-Manages projectiles fired by the player's ship.
+Projectiles fired by the ship, moving upward.
 
-#### Class: `Bullet(Sprite)`
+**Class: `Bullet(Sprite)`**
 
-**Purpose**: Represents a single bullet projectile moving upward on screen.
+| Method | Purpose |
+|--------|---------|
+| `__init__(ai_settings, screen, ship)` | Create bullet at ship position with upward velocity |
+| `update()` | Move bullet up by `speed_factor` |
+| `draw_bullet()` | Render bullet rectangle to screen |
 
-##### Methods
-
-**`__init__(self, ai_settings, screen, ship)`**
-- **Description**: Create a bullet at the ship's current position
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings object
-  - `screen` (pygame.Surface): Game display surface
-  - `ship` (Ship): Reference to the player's ship
-- **Returns**: None
-- **Attributes Set**:
-  - `screen`: Reference to game display
-  - `rect` (pygame.Rect): Bullet bounding rectangle
-  - `y` (float): Bullet's vertical position (decimal for smooth movement)
-  - `color` (tuple): RGB bullet color
-  - `speed_factor` (float): Bullet movement speed per frame
-
-**`update(self)`**
-- **Description**: Update bullet position, moving it upward
-- **Parameters**: None
-- **Returns**: None
-- **Behavior**: Moves bullet up by `speed_factor` each frame
-
-**`draw_bullet(self)`**
-- **Description**: Render the bullet rectangle on the screen
-- **Parameters**: None
-- **Returns**: None
+**Properties:** Speed (1.0), Color (black), Max on screen (3)
 
 ---
 
 ### Alien Module (`alien.py`)
 
-Represents the enemy aliens.
+Enemy aliens that descend from top of screen.
 
-#### Class: `Alien(Sprite)`
+**Class: `Alien(Sprite)`**
 
-**Purpose**: Represents a single alien enemy that moves downward on screen.
+| Method | Purpose |
+|--------|---------|
+| `__init__(ai_settings, screen)` | Load alien image (90×90), set initial position |
+| `update()` | Move alien down by `alien_speed_factor` |
+| `blitme()` | Draw alien sprite to screen |
 
-##### Methods
-
-**`__init__(self, ai_settings, screen)`**
-- **Description**: Initialize an alien, load its image, and set starting position
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings object
-  - `screen` (pygame.Surface): Game display surface
-- **Returns**: None
-- **Attributes Set**:
-  - `screen`: Reference to game display
-  - `ai_settings`: Reference to game settings
-  - `image` (pygame.Surface): Alien sprite image (scaled to 90x90)
-  - `rect` (pygame.Rect): Alien bounding rectangle
-  - `x` (float): Alien's horizontal position (decimal)
-  - `y` (float): Alien's vertical position (decimal)
-
-**`update(self)`**
-- **Description**: Move the alien downward smoothly
-- **Parameters**: None
-- **Returns**: None
-- **Behavior**: Increases y position by `alien_speed_factor` each frame
-
-**`blitme(self)`**
-- **Description**: Draw the alien sprite on the screen
-- **Parameters**: None
-- **Returns**: None
+**Movement:** Aliens move downward; when reaching bottom, they wrap back to top
 
 ---
 
 ### Scoreboard Module (`scoreboard.py`)
 
-Displays game score and current difficulty level.
+Displays score and current difficulty level in top corners.
 
-#### Class: `Scoreboard`
+**Class: `Scoreboard`**
 
-**Purpose**: Manages and displays the player's score and current game stage.
+| Method | Purpose |
+|--------|---------|
+| `__init__(ai_settings, screen)` | Initialize fonts and render initial score/stage |
+| `prep_score()` | Render score text with shadow, position at top center |
+| `prep_stage()` | Render stage text with shadow, position at top left |
+| `show_score()` | Draw both score and stage to screen |
 
-##### Methods
-
-**`__init__(self, ai_settings, screen)`**
-- **Description**: Initialize scoreboard with font and initial score/stage displays
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings object
-  - `screen` (pygame.Surface): Game display surface
-- **Returns**: None
-- **Attributes Set**:
-  - `screen`: Reference to game display
-  - `screen_rect` (pygame.Rect): Screen dimensions
-  - `ai_settings`: Reference to game settings
-  - `score` (int): Current player score (starts at 0)
-  - `text_color` (tuple): RGB color for text (white)
-  - `shadow_color` (tuple): RGB color for shadow (black)
-  - `font` (pygame.font.Font): Font for rendering text (Arial, 40pt, bold)
-
-**`prep_score(self)`**
-- **Description**: Render the current score as an image with shadow effect
-- **Parameters**: None
-- **Returns**: None
-- **Behavior**:
-  - Creates formatted score string
-  - Renders main text and shadow
-  - Positions score at top center of screen
-  - Stores in `self.score_image` and `self.score_rect`
-
-**`prep_stage(self)`**
-- **Description**: Render the current game stage/difficulty as an image with shadow
-- **Parameters**: None
-- **Returns**: None
-- **Behavior**:
-  - Creates formatted stage string with level name
-  - Renders main text (golden yellow) and shadow
-  - Positions stage at top left of screen
-  - Stores in `self.stage_image` and `self.stage_rect`
-
-**`show_score(self)`**
-- **Description**: Draw both score and stage displays to the screen
-- **Parameters**: None
-- **Returns**: None
+**Display:** White text with black shadow for visibility
 
 ---
 
 ### Game Functions Module (`game_fuction.py`)
 
-Core game logic and event handling.
+Core game logic, event handling, and collision detection.
 
-#### Functions
+**Event Handlers:**
 
-**`check_keydown_events(event, ship, ai_settings, screen, bullets, sb, aliens)`**
-- **Description**: Handle keyboard key press events
-- **Parameters**:
-  - `event` (pygame.event.EventType): Pygame event object
-  - `ship` (Ship): Player ship reference
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `bullets` (pygame.sprite.Group): Group of active bullets
-  - `sb` (Scoreboard): Scoreboard reference
-  - `aliens` (pygame.sprite.Group): Group of aliens
-- **Returns**: None
-- **Behavior**:
-  - Arrow keys: Set ship movement flags
-  - Space: Create new bullet if under bullet limit
-  - 1/Numpad 1: Set difficulty to Easy
-  - 2/Numpad 2: Set difficulty to Medium
-  - 3/Numpad 3: Set difficulty to Hard
-  - Q: Exit game
+| Function | Purpose |
+|----------|---------|
+| `check_keydown_events(event, ship, ...)` | Handle key presses (arrows, space, 1-3, Q) |
+| `check_keyup_events(event, ship)` | Handle key releases (clear movement flags) |
+| `check_events(ship, ai_settings, ...)` | Main event dispatcher |
 
-**`check_keyup_events(event, ship)`**
-- **Description**: Handle keyboard key release events
-- **Parameters**:
-  - `event` (pygame.event.EventType): Pygame event object
-  - `ship` (Ship): Player ship reference
-- **Returns**: None
-- **Behavior**: Clears movement flags when arrow keys are released
+**Fleet Management:**
 
-**`check_events(ship, ai_settings, screen, bullets, sb=None, aliens=None)`**
-- **Description**: Main event handler that processes all pygame events
-- **Parameters**:
-  - `ship` (Ship): Player ship reference
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `bullets` (pygame.sprite.Group): Group of active bullets
-  - `sb` (Scoreboard, optional): Scoreboard reference
-  - `aliens` (pygame.sprite.Group, optional): Group of aliens
-- **Returns**: None
-- **Behavior**: Loops through pygame events and dispatches to appropriate handlers
+| Function | Purpose |
+|----------|---------|
+| `create_fleet(ai_settings, screen, ship, aliens)` | Generate grid of aliens filling screen |
+| `create_alien(ai_settings, screen, aliens, alien_number, row_number)` | Spawn single alien at position |
+| `get_number_aliens_x(ai_settings, alien_width)` | Calculate aliens per row |
+| `get_number_rows(ai_settings, ship_height, alien_height)` | Calculate number of rows |
+| `check_aliens_bottom(ai_settings, screen, aliens)` | Wrap aliens from bottom to top |
 
-**`create_alien(ai_settings, screen, aliens, alien_number, row_number)`**
-- **Description**: Create a single alien and add it to the fleet
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `aliens` (pygame.sprite.Group): Group to add alien to
-  - `alien_number` (int): Alien's column position (0 = leftmost)
-  - `row_number` (int): Alien's row position (0 = topmost)
-- **Returns**: None
-- **Behavior**: Creates alien with calculated x/y position and adds to group
+**Game Updates:**
 
-**`get_number_aliens_x(ai_settings, alien_width)`**
-- **Description**: Calculate how many aliens fit horizontally on screen
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `alien_width` (int): Width of single alien sprite
-- **Returns**: (int) Number of aliens that fit in one row
-- **Calculation**: Divides available horizontal space by (2 × alien width)
+| Function | Purpose |
+|----------|---------|
+| `update_aliens(ai_settings, screen, ship, aliens)` | Move aliens, check ship collision, end game if hit |
+| `update_bullets(ai_settings, screen, ship, aliens, bullets, sb)` | Move bullets, detect alien hits, update score |
+| `update_screen(ai_setting, screen, ship, aliens, bullets, sb)` | Render all objects (background, ships, aliens, bullets, score) |
 
-**`get_number_rows(ai_settings, ship_height, alien_height)`**
-- **Description**: Calculate how many rows of aliens fit on screen
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `ship_height` (int): Height of ship sprite
-  - `alien_height` (int): Height of alien sprite
-- **Returns**: (int) Number of alien rows that fit on screen
-- **Calculation**: Divides available vertical space by (2 × alien height)
+**Game Over:**
 
-**`create_fleet(ai_settings, screen, ship, aliens)`**
-- **Description**: Create a complete fleet of aliens in a grid formation
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `ship` (Ship): Player ship (used for height calculation)
-  - `aliens` (pygame.sprite.Group): Group to add aliens to
-- **Returns**: None
-- **Behavior**:
-  - Calculates rows and columns based on screen size
-  - Creates aliens in a grid pattern
-  - Calls `create_alien()` for each position
-
-**`check_aliens_bottom(ai_settings, screen, aliens)`**
-- **Description**: Check if aliens have reached bottom and wrap them back to top
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `aliens` (pygame.sprite.Group): Group of aliens to check
-- **Returns**: None
-- **Behavior**: For each alien past screen bottom, resets its y-position to top
-
-**`show_game_over(screen)`**
-- **Description**: Display "GAME OVER" message and exit the game
-- **Parameters**:
-  - `screen` (pygame.Surface): Game display
-- **Returns**: None (exits program)
-- **Behavior**:
-  - Renders large red text with black shadow
-  - Centers text on screen
-  - Displays for 2 seconds
-  - Exits game
-
-**`update_aliens(ai_settings, screen, ship, aliens)`**
-- **Description**: Update alien positions and check for collisions with ship
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `ship` (Ship): Player ship reference
-  - `aliens` (pygame.sprite.Group): Group of aliens
-- **Returns**: None
-- **Behavior**:
-  - Updates all alien positions
-  - Wraps aliens that reach bottom
-  - Checks collision between ship and any alien
-  - Triggers game over if collision detected
-
-**`update_screen(ai_setting, screen, ship, aliens, bullets, sb)`**
-- **Description**: Render all game objects to the screen
-- **Parameters**:
-  - `ai_setting` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `ship` (Ship): Player ship
-  - `aliens` (pygame.sprite.Group): Group of aliens
-  - `bullets` (pygame.sprite.Group): Group of bullets
-  - `sb` (Scoreboard): Scoreboard reference
-- **Returns**: None
-- **Behavior**:
-  - Draws background
-  - Draws ship
-  - Draws all aliens
-  - Draws all bullets
-  - Displays score and stage
-  - Updates display
-
-**`update_bullets(ai_settings, screen, ship, aliens, bullets, sb)`**
-- **Description**: Update bullet positions and handle collisions
-- **Parameters**:
-  - `ai_settings` (Settings): Game settings
-  - `screen` (pygame.Surface): Game display
-  - `ship` (Ship): Player ship
-  - `aliens` (pygame.sprite.Group): Group of aliens
-  - `bullets` (pygame.sprite.Group): Group of bullets
-  - `sb` (Scoreboard): Scoreboard reference
-- **Returns**: None
-- **Behavior**:
-  - Updates all bullet positions
-  - Removes bullets that leave screen
-  - Detects bullet-alien collisions
-  - Removes hit aliens and bullets
-  - Updates score for destroyed aliens
+| Function | Purpose |
+|----------|---------|
+| `show_game_over(screen)` | Display "GAME OVER" message and exit after 2 seconds |
 
 ---
 
@@ -499,28 +256,19 @@ Core game logic and event handling.
 
 Entry point and main game loop.
 
-#### Functions
+**Function: `run_game()`**
 
-**`run_game()`**
-- **Description**: Initialize pygame, create game objects, and run the main game loop
-- **Parameters**: None
-- **Returns**: None
-- **Initialization Steps**:
-  1. Initializes Pygame
-  2. Creates settings, screen, and window caption
-  3. Creates scoreboard
-  4. Creates player ship
-  5. Creates empty bullet group
-  6. Creates alien fleet
-  7. Runs main game loop
-
-**Main Game Loop**:
-- Calls `check_events()` to handle player input
-- Updates ship position
-- Updates bullet positions
-- Updates alien positions
-- Renders all objects to screen
-- Repeats indefinitely until game ends
+Initializes Pygame, creates all game objects, and runs the main loop:
+1. Initialize Pygame
+2. Create settings, screen, and scoreboard
+3. Create player ship and sprite groups
+4. Generate initial alien fleet
+5. **Main Loop:**
+   - Check events (player input)
+   - Update ship position
+   - Update bullets and collisions
+   - Update aliens and check ship collision
+   - Render screen
 
 ---
 
